@@ -32,7 +32,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/people", GetPeople).Methods("GET")
 	router.HandleFunc("/people/{id}", GetPerson).Methods("GET")
-	// router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
+	router.HandleFunc("/people/{id}", CreatePerson).Methods("POST")
 	// router.HandleFunc("/people/{id}", DeletePerson).Methods("DELETE")
 	fmt.Println("The server is runnning on http://localhost:8000")
 	log.Fatal(http.ListenAndServe(":8000", router))
@@ -52,4 +52,14 @@ func GetPerson(w http.ResponseWriter, r *http.Request) {
 	}
 	// 指定したIDのPersonが無かったときに{}を返す
 	json.NewEncoder(w).Encode(&Person{})
+}
+
+func CreatePerson(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	var person Person
+	rperson := json.NewDecoder(r.Body).Decode(&person)
+	fmt.Println(rperson)
+	person.ID = params["id"]
+	people = append(people, person)
+	json.NewEncoder(w).Encode(people)
 }
